@@ -8,4 +8,4 @@ TODO:
 
   • Re-factor components into their own files.
   
-  • Figure out the appropriate way to passdown state and dispatch from useReducer to children components.
+  • Figure out the appropriate way to pass down state and dispatch from useReducer to children components.
