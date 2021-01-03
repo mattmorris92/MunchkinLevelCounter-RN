@@ -1,5 +1,8 @@
 # MunchkinLevelCounter-RN
 Simple Munchkin board game level counter app built with React Native
+
+Track your combat score while playing the Munchkin board game.
+You can also match the app's background color to your player game piece color.
   
 ![DEMO](Demo.gif)
 
