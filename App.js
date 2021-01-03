@@ -17,34 +17,40 @@ const initialState = {
   playerColorIndex: 0
 };
 
+const INCREMENT_LEVEL = 'INCREMENT_LEVEL';
+const DECREMENT_LEVEL = 'DECREMENT_LEVEL';
+const INCREMENT_BONUS = 'INCREMENT_BONUS';
+const DECREMENT_BONUS = 'DECREMENT_BONUS';
+const TOGGLE_COLOR = 'TOGGLE_COLOR';
+
 function reducer(state, action) {
   switch (action.type) {
-    case 'incrementLevel':
+    case INCREMENT_LEVEL:
       return {
         ...state,
         combatScore: state.level + 1 + state.bonus,
         level: state.level + 1
       };
-    case 'decrementLevel':
+    case DECREMENT_LEVEL:
       if (state.level == 0) { return state; }
       return {
         ...state,
         combatScore: state.level - 1 + state.bonus,
         level: state.level - 1
       };
-    case 'incrementBonus':
+    case INCREMENT_BONUS:
       return {
         ...state,
         combatScore: state.bonus + 1 + state.level,
         bonus: state.bonus + 1
       };
-    case 'decrementBonus':
+    case DECREMENT_BONUS:
       return {
         ...state,
         combatScore: state.bonus - 1 + state.level,
         bonus: state.bonus - 1
       };
-    case 'toggleColor':
+    case TOGGLE_COLOR:
       return {
         ...state,
         playerColorIndex: (state.playerColorIndex == colors.length - 1) ? 0 : state.playerColorIndex + 1
@@ -69,7 +75,7 @@ const App = () => {
         <View style={styles.header}>
           <View style={styles.controls}>
             <TouchableOpacity 
-              onPress= {() => dispatch({type: 'toggleColor'})}
+              onPress= {() => dispatch({type: TOGGLE_COLOR})}
               style={[
                 styles.colorControl, 
                 { backgroundColor: colors[state.playerColorIndex] }
@@ -96,47 +102,36 @@ const App = () => {
           </View>
         </View>
         <View style={styles.inputs}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputTitle}>Level</Text>
-              <Text style={styles.inputScore}>{state.level}</Text>
-            <View style={styles.inputControls}>
-              <TouchableOpacity 
-                onPress= {() => dispatch({type: 'decrementLevel'})}
-                style={styles.decrement}
-              >
-                <Text style={styles.buttonText}>-</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                onPress= {() => dispatch({type: 'incrementLevel'})}
-                style={styles.increment}
-              >
-                <Text style={styles.buttonText}>+</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputTitle}>Bonus</Text>
-              <Text style={styles.inputScore}>{state.bonus}</Text>
-            <View style={styles.inputControls}>
-              <TouchableOpacity
-                onPress= {() => dispatch({type: 'decrementBonus'})}
-                style={styles.decrement}
-              >
-                <Text style={styles.buttonText}>-</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                onPress= {() => dispatch({type: 'incrementBonus'})}
-                style={styles.increment}
-              >
-                <Text style={styles.buttonText}>+</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          <Counter state={state} dispatch={dispatch} title="Level" incrementType={INCREMENT_LEVEL} decrementType={DECREMENT_LEVEL}/>
+          <Counter state={state} dispatch={dispatch} title="Bonus" incrementType={INCREMENT_BONUS} decrementType={DECREMENT_BONUS}/>
         </View>
       </View>
     </>
   );
 };
+
+const Counter = ({state, dispatch, title, incrementType, decrementType}) => {
+  return (
+    <View style={styles.inputContainer}>
+      <Text style={styles.inputTitle}>{title}</Text>
+        <Text style={styles.inputScore}>{(title == "Level") ? state.level : state.bonus}</Text>
+      <View style={styles.inputControls}>
+        <TouchableOpacity 
+          onPress= {() => dispatch({type: decrementType})}
+          style={styles.decrement}
+        >
+          <Text style={styles.buttonText}>-</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          onPress= {() => dispatch({type: incrementType})}
+          style={styles.increment}
+        >
+          <Text style={styles.buttonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
