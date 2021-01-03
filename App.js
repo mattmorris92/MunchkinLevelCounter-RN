@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useReducer, useState } from 'react';
 
 import {
-  SafeAreaView,
   StyleSheet,
   View,
   Text,
@@ -9,42 +8,78 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-const App = () => {
-  const [combatScore, setCombatScore] = useState(0);
-  const [level, setLevel] = useState(0);
-  const [bonus, setBonus] = useState(0);
-  const [playerColorIndex, setPlayerColorIndex] = useState(0);
+const colors = ["white", "blue", "red", "orange", "green", "blue", "purple"];
 
-  const colors = ["white", "blue", "red", "orange", "green", "blue", "purple"];
+const initialState = {
+  combatScore: 0,
+  level: 0,
+  bonus: 0,
+  playerColorIndex: 0
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'incrementLevel':
+      return {
+        ...state,
+        combatScore: state.level + 1 + state.bonus,
+        level: state.level + 1
+      };
+    case 'decrementLevel':
+      if (state.level == 0) { return state; }
+      return {
+        ...state,
+        combatScore: state.level - 1 + state.bonus,
+        level: state.level - 1
+      };
+    case 'incrementBonus':
+      return {
+        ...state,
+        combatScore: state.bonus + 1 + state.level,
+        bonus: state.bonus + 1
+      };
+    case 'decrementBonus':
+      return {
+        ...state,
+        combatScore: state.bonus - 1 + state.level,
+        bonus: state.bonus - 1
+      };
+    case 'toggleColor':
+      return {
+        ...state,
+        playerColorIndex: (state.playerColorIndex == colors.length - 1) ? 0 : state.playerColorIndex + 1
+      }
+    default:
+      throw new Error();
+  }
+}
+
+const App = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   return (
     <>
-      <StatusBar barStyle={(colors[playerColorIndex] == "white") ? "dark-content" : "light-content"} />
+      <StatusBar barStyle={(colors[state.playerColorIndex] == "white") ? "dark-content" : "light-content"} />
       <View
         style={[
           styles.container,
-          { backgroundColor: colors[playerColorIndex] }
+          { backgroundColor: colors[state.playerColorIndex] }
         ]}
       >
         <View style={styles.header}>
           <View style={styles.controls}>
             <TouchableOpacity 
-              onPress = {
-                () => {
-                  if (playerColorIndex == colors.length - 1) { setPlayerColorIndex(0); return; }
-                  setPlayerColorIndex(playerColorIndex + 1);
-                }
-              }
+              onPress= {() => dispatch({type: 'toggleColor'})}
               style={[
                 styles.colorControl, 
-                { backgroundColor: colors[playerColorIndex] }
+                { backgroundColor: colors[state.playerColorIndex] }
               ]}
             />
           </View>
           <Text 
             style={[
               styles.title,
-              { color: (colors[playerColorIndex] == "white") ? "black" : "white" }
+              { color: (colors[state.playerColorIndex] == "white") ? "black" : "white" }
             ]}
           >
             Munchkin Combat Score
@@ -53,39 +88,26 @@ const App = () => {
             <Text 
               style={[
                 styles.score,
-                { color: (colors[playerColorIndex] == "white") ? "black" : "white" }
+                { color: (colors[state.playerColorIndex] == "white") ? "black" : "white" }
               ]}
             >
-              {combatScore}
+              {state.combatScore}
             </Text>
           </View>
         </View>
         <View style={styles.inputs}>
           <View style={styles.inputContainer}>
             <Text style={styles.inputTitle}>Level</Text>
-              <Text style={styles.inputScore}>{level}</Text>
+              <Text style={styles.inputScore}>{state.level}</Text>
             <View style={styles.inputControls}>
               <TouchableOpacity 
-                onPress= {
-                  () => {
-                    if (level == 0) { return }
-                    const l = level - 1;
-                    setLevel(l);
-                    setCombatScore(l + bonus)
-                  }
-                }
+                onPress= {() => dispatch({type: 'decrementLevel'})}
                 style={styles.decrement}
               >
                 <Text style={styles.buttonText}>-</Text>
               </TouchableOpacity>
               <TouchableOpacity 
-                onPress= {
-                  () => {
-                    const l = level + 1;
-                    setLevel(l);
-                    setCombatScore(l + bonus);
-                  }
-                }
+                onPress= {() => dispatch({type: 'incrementLevel'})}
                 style={styles.increment}
               >
                 <Text style={styles.buttonText}>+</Text>
@@ -94,28 +116,16 @@ const App = () => {
           </View>
           <View style={styles.inputContainer}>
             <Text style={styles.inputTitle}>Bonus</Text>
-              <Text style={styles.inputScore}>{bonus}</Text>
+              <Text style={styles.inputScore}>{state.bonus}</Text>
             <View style={styles.inputControls}>
               <TouchableOpacity
-                onPress= {
-                  () => {
-                    const b = bonus - 1;
-                    setBonus(b);
-                    setCombatScore(b + level);
-                  }
-                }
+                onPress= {() => dispatch({type: 'decrementBonus'})}
                 style={styles.decrement}
               >
                 <Text style={styles.buttonText}>-</Text>
               </TouchableOpacity>
               <TouchableOpacity 
-                onPress= {
-                  () => {
-                    const b = bonus + 1 ;
-                    setBonus(b);
-                    setCombatScore(b + level);
-                  }
-                }
+                onPress= {() => dispatch({type: 'incrementBonus'})}
                 style={styles.increment}
               >
                 <Text style={styles.buttonText}>+</Text>
