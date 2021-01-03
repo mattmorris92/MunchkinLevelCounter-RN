@@ -1,5 +1,5 @@
 # MunchkinLevelCounter-RN
-Simple Munchkin board game level counter app written with React Native
+Simple Munchkin board game level counter app built with React Native
   
 ![DEMO](Demo.gif)
 
