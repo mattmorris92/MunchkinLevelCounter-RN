@@ -24,7 +24,6 @@ const DECREMENT_BONUS = 'DECREMENT_BONUS';
 const TOGGLE_COLOR = 'TOGGLE_COLOR';
 
 function reducer(state, action) {
-  console.log("test", action.type);
   switch (action.type) {
     case INCREMENT_LEVEL:
       return {
